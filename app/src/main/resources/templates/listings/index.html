@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Estatia - Browse Listings</title>
+</head>
+<body>
+<section class="bg-body-tertiary py-5">
+    <!--@thymesVar id="filter" type="com.iamspase.estatia.listing.ListingFilter"-->
+    <!--@thymesVar id="page" type="org.springframework.data.domain.Page<com.iamspase.estatia.listing.Listing>"-->
+    <!--@thymesVar id="cities" type="java.util.List<com.iamspase.estatia.city.City>"-->
+    <!--@thymesVar id="propertyTypes" type="com.iamspase.estatia.listing.PropertyType[]"-->
+    <!--@thymesVar id="listingTypes" type="com.iamspase.estatia.listing.ListingType[]"-->
+    <!--@thymesVar id="sort" type="java.lang.String"-->
+    <!--@thymesVar id="pageUrl" type="java.lang.String"-->
+    <!--@thymesVar id="l" type="com.iamspase.estatia.listing.Listing"-->
+    <!--@thymesVar id="c" type="com.iamspase.estatia.city.City"-->
+    <!--@thymesVar id="t" type="java.lang.Enum"-->
+
+    <div>
+        <h5 class="text-muted">Listings</h5>
+        <h2>Browse listings</h2>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 py-4">
+        <div class="d-flex align-items-center gap-3">
+            <button type="button" id="toggleFilters" class="btn-solid"
+                    aria-expanded="false" aria-controls="filterForm">
+                Filters
+                <span id="filterCount" class="badge text-bg-primary rounded-pill ms-1"
+                      style="display:none">0</span>
+            </button>
+            <span class="text-muted">
+                <strong th:text="${page.totalElements}">0</strong> listings
+            </span>
+        </div>
+
+        <select class="form-control w-auto" name="sort" form="filterForm" aria-label="Sort by"
+                onchange="this.form.requestSubmit()">
+            <option value="newest"     th:selected="${sort == 'newest'}">Newest</option>
+            <option value="price_asc"  th:selected="${sort == 'price_asc'}">Price: low to high</option>
+            <option value="price_desc" th:selected="${sort == 'price_desc'}">Price: high to low</option>
+        </select>
+    </div>
+
+    <!-- Collapsible filters -->
+    <form id="filterForm" method="get" th:action="@{/listings}" th:object="${filter}"
+          class="mb-4" style="display:none">
+
+        <div class="type-group mb-3">
+            <input type="radio" class="btn-check" name="listingType" id="lt-any" value=""
+                   th:checked="${filter.listingType == null}">
+            <label class="type-pill" for="lt-any">Sale or rent</label>
+            <th:block th:each="t : ${listingTypes}">
+                <input type="radio" class="btn-check" name="listingType"
+                       th:id="'lt-' + ${t}" th:value="${t}"
+                       th:checked="${filter.listingType == t}">
+                <label class="type-pill" th:for="'lt-' + ${t}"
+                       th:text="${t.name() == 'SALE'} ? 'For sale' : 'For rent'"></label>
+            </th:block>
+        </div>
+
+        <div class="type-group mb-4">
+            <input type="radio" class="btn-check" name="propertyType" id="pt-any" value=""
+                   th:checked="${filter.propertyType == null}">
+            <label class="type-pill" for="pt-any">Any property</label>
+            <th:block th:each="t : ${propertyTypes}">
+                <input type="radio" class="btn-check" name="propertyType"
+                       th:id="'pt-' + ${t}" th:value="${t}"
+                       th:checked="${filter.propertyType == t}">
+                <label class="type-pill" th:for="'pt-' + ${t}"
+                       th:text="${#strings.capitalize(#strings.toLowerCase(t))}"></label>
+            </th:block>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="cityId" class="form-label mb-2">City</label>
+                <select class="form-control" id="cityId" th:field="*{cityId}">
+                    <option value="">Any city</option>
+                    <option th:each="c : ${cities}" th:value="${c.id}" th:text="${c.name}"></option>
+                </select>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-3">
+                <label for="minRooms" class="form-label mb-2">Min rooms</label>
+                <label class="form-control form-adorn">
+                    <span class="form-adorn-icon" aria-hidden="true">🛏️</span>
+                    <input type="number" min="1" max="50" step="1" class="form-ghost" id="minRooms"
+                           th:field="*{minRooms}" placeholder="Any" data-nonneg>
+                </label>
+            </div>
+
+            <div class="col-12 col-lg-6"></div>
+
+            <div class="col-12 col-md-4">
+                <label for="minPrice" class="form-label mb-2">Price</label>
+                <div class="row g-2">
+                    <div class="col">
+                        <label class="form-control form-adorn">
+                            <span class="form-adorn-icon" aria-hidden="true">€</span>
+                            <input type="number" step="any" min="0" class="form-ghost" id="minPrice"
+                                   th:field="*{minPrice}" placeholder="Min" aria-label="Minimum price" data-nonneg>
+                        </label>
+                    </div>
+                    <div class="col">
+                        <label class="form-control form-adorn">
+                            <span class="form-adorn-icon" aria-hidden="true">€</span>
+                            <input type="number" step="any" min="0" class="form-ghost" id="maxPrice"
+                                   th:field="*{maxPrice}" placeholder="Max" aria-label="Maximum price" data-nonneg>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <label for="minArea" class="form-label mb-2">Area</label>
+                <div class="row g-2">
+                    <div class="col">
+                        <label class="form-control form-adorn">
+                            <span class="form-adorn-icon" aria-hidden="true">m²</span>
+                            <input type="number" step="any" min="0" class="form-ghost" id="minArea"
+                                   th:field="*{minArea}" placeholder="Min" aria-label="Minimum area" data-nonneg>
+                        </label>
+                    </div>
+                    <div class="col">
+                        <label class="form-control form-adorn">
+                            <span class="form-adorn-icon" aria-hidden="true">m²</span>
+                            <input type="number" step="any" min="0" class="form-ghost" id="maxArea"
+                                   th:field="*{maxArea}" placeholder="Max" aria-label="Maximum area" data-nonneg>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <label for="minFloor" class="form-label mb-2">Floor</label>
+                <div class="row g-2">
+                    <div class="col">
+                        <input type="number" min="-3" max="200" step="1" class="form-control" id="minFloor"
+                               th:field="*{minFloor}" placeholder="Min" aria-label="Minimum floor">
+                    </div>
+                    <div class="col">
+                        <input type="number" min="-3" max="200" step="1" class="form-control" id="maxFloor"
+                               th:field="*{maxFloor}" placeholder="Max" aria-label="Maximum floor">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center justify-content-end gap-2 pt-4">
+            <a class="btn-solid" th:href="@{/listings}">Reset</a>
+            <button type="submit" class="btn-solid theme-primary">Apply filters</button>
+        </div>
+    </form>
+
+    <!-- Compact list rows -->
+    <div class="d-flex flex-column gap-2">
+        <article class="card shadow-sm overflow-hidden flex-row" th:each="l : ${page.content}">
+
+            <!-- Image + type badge -->
+            <div class="position-relative flex-shrink-0"
+                 style="width: clamp(8rem, 24%, 16rem); min-height: 10rem;">
+                <img th:if="${!l.images.isEmpty()}"
+                     th:src="@{'/images/' + ${l.images[0]}}"
+                     th:alt="${l.title}"
+                     class="w-100 h-100 object-fit-cover position-absolute top-0 start-0"
+                     loading="lazy">
+                <img th:unless="${!l.images.isEmpty()}"
+                     src="https://images.unsplash.com/photo-1781473252810-801e30ba8da2?q=80&w=983&auto=format&fit=crop"
+                     th:alt="${l.title}"
+                     class="w-100 h-100 object-fit-cover position-absolute top-0 start-0"
+                     loading="lazy">
+                <span class="badge text-bg-primary position-absolute top-0 start-0 m-2"
+                      th:if="${l.listingType != null}"
+                      th:text="${l.listingType?.name() == 'SALE'} ? 'For sale' : 'For rent'">For sale</span>
+            </div>
+
+            <!-- Details -->
+            <div class="card-body py-3 px-3 d-flex flex-column gap-2 flex-grow-1" style="min-width:0">
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                    <div style="min-width:0">
+                        <h5 class="card-title mb-1 text-truncate">
+                            <a th:href="@{/listings/{id}(id=${l.id})}"
+                               class="text-reset text-decoration-none stretched-link"
+                               th:text="${l.title}">Title</a>
+                        </h5>
+                        <div class="small text-muted text-truncate">
+                            <i class="bi bi-geo-alt me-1"></i><span
+                                th:if="${l.neighbourhood != null}"
+                                th:text="${l.neighbourhood.name} + ', '"></span><span
+                                th:text="${l.city?.name}">City</span>
+                        </div>
+                    </div>
+                    <!-- Price on mobile only -->
+                    <span class="fw-semibold text-nowrap d-md-none"
+                          th:text="${#numbers.formatDecimal(l.pricing, 1, 'COMMA', 0, 'POINT')} + ' €'">100,000 €</span>
+                </div>
+
+                <p class="text-muted small mb-0"
+                   style="display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;"
+                   th:text="${l.description}">Description preview</p>
+
+                <div class="d-flex flex-wrap align-items-center gap-3 mt-auto">
+                <span class="badge text-bg-secondary"
+                      th:text="${#strings.capitalize(#strings.toLowerCase(l.propertyType))}">Apartment</span>
+                    <span class="small text-muted">
+                    <i class="bi bi-rulers me-1"></i><span
+                            th:text="${l.area % 1 == 0 ? l.area.intValue() : l.area} + ' m²'">60 m²</span>
+                </span>
+                    <span class="small text-muted">
+                    <i class="bi bi-door-open me-1"></i><span
+                            th:text="${l.rooms} + (${l.rooms == 1} ? ' room' : ' rooms')">2 rooms</span>
+                </span>
+                    <span class="small text-muted">
+                    <i class="bi bi-building me-1"></i><span
+                            th:text="${l.floor == 0} ? 'Ground floor' : 'Floor ' + ${l.floor}">Floor 3</span>
+                </span>
+                </div>
+            </div>
+
+            <!-- Price column -->
+            <div class="d-none d-md-flex flex-column justify-content-between align-items-end text-end border-start p-3 flex-shrink-0"
+                 style="width: 12rem;">
+                <div>
+                    <div class="fs-4 fw-semibold lh-1"
+                         th:text="${#numbers.formatDecimal(l.pricing, 1, 'COMMA', 0, 'POINT')} + ' €'">100,000 €</div>
+                    <div class="small text-muted mt-1" th:if="${l.listingType?.name() == 'RENT'}">per month</div>
+                    <div class="small text-muted mt-1"
+                         th:if="${l.listingType?.name() == 'SALE' and l.area > 0}"
+                         th:text="${#numbers.formatDecimal(l.pricing / l.area, 1, 'COMMA', 0, 'POINT')} + ' €/m²'">1,500 €/m²</div>
+                </div>
+                <a th:href="@{/listings/{id}(id=${l.id})}" class="btn-solid theme-primary position-relative" style="z-index:2">
+                    View details
+                </a>
+            </div>
+        </article>
+    </div>
+
+    <!-- Empty state -->
+    <div th:if="${page.content.isEmpty()}" class="card card-body text-center text-muted py-5">
+        No listings match your filters.
+    </div>
+
+    <!-- Pagination -->
+    <nav th:if="${page.totalPages > 1}" class="mt-4" aria-label="Listings pages">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+                <a class="page-link" th:href="${pageUrl} + ${page.number - 1}">Previous</a>
+            </li>
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(T(java.lang.Math).max(0, page.number - 2),
+                                                 T(java.lang.Math).min(page.totalPages - 1, page.number + 2))}"
+                th:classappend="${i == page.number} ? 'active'">
+                <a class="page-link" th:href="${pageUrl} + ${i}" th:text="${i + 1}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+                <a class="page-link" th:href="${pageUrl} + ${page.number + 1}">Next</a>
+            </li>
+        </ul>
+    </nav>
+
+    <script>
+        (function () {
+            var btn = document.getElementById('toggleFilters');
+            var panel = document.getElementById('filterForm');
+            var badge = document.getElementById('filterCount');
+
+            var active = 0;
+            panel.querySelectorAll('select, input').forEach(function (f) {
+                if (f.type === 'radio') {
+                    if (f.checked && f.value !== '') active++;
+                } else if (f.value !== '') {
+                    active++;
+                }
+            });
+
+            if (active > 0) {
+                badge.textContent = active;
+                badge.style.display = 'inline-block';
+            }
+
+            function setOpen(open) {
+                panel.style.display = open ? '' : 'none';
+                btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            }
+
+            setOpen(active > 0);
+            btn.addEventListener('click', function () {
+                setOpen(panel.style.display === 'none');
+            });
+        })();
+    </script>
+</section>
+</body>
+</html>

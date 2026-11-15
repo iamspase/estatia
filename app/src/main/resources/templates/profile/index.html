@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Estatia - My profile</title>
+</head>
+<body>
+<section class="bg-body-tertiary py-5">
+    <!--@thymesVar id="profile" type="com.iamspase.estatia.profile.Profile"-->
+    <!--@thymesVar id="profileForm" type="com.iamspase.estatia.profile.ProfileForm"-->
+    <!--@thymesVar id="myListings" type="java.util.List<com.iamspase.estatia.listing.Listing>"-->
+    <!--@thymesVar id="l" type="com.iamspase.estatia.listing.Listing"-->
+
+    <div>
+        <h5 class="text-muted">Account</h5>
+        <h2>My profile</h2>
+    </div>
+
+    <div class="alert alert-success mt-3" th:if="${saved}" role="status">
+        Contact details saved.
+    </div>
+
+    <div class="d-flex align-items-center gap-3 py-4">
+        <div>
+            <div class="fw-semibold" th:text="${profile.name != null ? profile.name : profile.email}">Name</div>
+            <div class="small text-muted" th:text="${profile.email}">email@example.com</div>
+        </div>
+    </div>
+
+    <form th:action="@{/profile}" th:object="${profileForm}" method="post">
+        <h4>Contact details</h4>
+        <p class="text-muted">Shown to people interested in your listings.</p>
+
+        <div class="row g-4">
+            <div class="form-field col-12 col-md-4">
+                <label for="displayName" class="form-label mb-2">Display name</label>
+                <input type="text" class="form-control" id="displayName" th:field="*{displayName}"
+                       maxlength="60" placeholder="How buyers see you">
+                <p class="text-danger small mt-1" th:if="${#fields.hasErrors('displayName')}"
+                   th:errors="*{displayName}"></p>
+            </div>
+
+            <div class="form-field col-12 col-md-4">
+                <label for="contactEmail" class="form-label mb-2">Contact email*</label>
+                <input type="email" class="form-control" id="contactEmail" th:field="*{contactEmail}"
+                       maxlength="120" required>
+                <p class="text-danger small mt-1" th:if="${#fields.hasErrors('contactEmail')}"
+                   th:errors="*{contactEmail}"></p>
+            </div>
+
+            <div class="form-field col-12 col-md-4">
+                <label for="phone" class="form-label mb-2">Phone</label>
+                <input type="tel" class="form-control" id="phone" th:field="*{phone}"
+                       maxlength="20" placeholder="+359 ...">
+                <p class="text-danger small mt-1" th:if="${#fields.hasErrors('phone')}"
+                   th:errors="*{phone}"></p>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end pt-4">
+            <button type="submit" class="btn-solid theme-primary">Save changes</button>
+        </div>
+    </form>
+
+    <div class="py-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0">My listings</h4>
+            <a class="btn-solid" th:href="@{/listings/new}">New listing</a>
+        </div>
+
+        <div class="card card-body text-center text-muted py-4" th:if="${myListings.isEmpty()}">
+            You haven't posted anything yet.
+        </div>
+
+        <div class="d-flex flex-column gap-2">
+            <a class="card card-body flex-row justify-content-between align-items-center text-reset text-decoration-none"
+               th:each="l : ${myListings}" th:href="@{/listings/{id}(id=${l.id})}">
+                <span class="text-truncate" th:text="${l.title}">Title</span>
+                <span class="fw-semibold text-nowrap ms-3"
+                      th:text="${#numbers.formatDecimal(l.pricing, 1, 'COMMA', 0, 'POINT')} + ' €'">100,000 €</span>
+            </a>
+        </div>
+    </div>
+</section>
+</body>
+</html>

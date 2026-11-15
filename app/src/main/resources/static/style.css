@@ -1,0 +1,85 @@
+:root {
+    /* ---------- Surfaces: light = pewter-025/050, dark = pewter-975 and lighter ---------- */
+    --bs-bg-body: light-dark(var(--bs-pewter-025), var(--bs-pewter-975));
+    --bs-bg-1:    light-dark(var(--bs-pewter-050), var(--bs-pewter-950)); /* cards, navbar */
+    --bs-bg-2:    light-dark(var(--bs-pewter-100), var(--bs-pewter-900));
+    --bs-bg-3:    light-dark(var(--bs-pewter-200), var(--bs-pewter-800));
+    --bs-bg-4:    light-dark(var(--bs-pewter-300), var(--bs-pewter-700));
+
+    /* ---------- Text (fg-body strongest, fg-4 faintest) ---------- */
+    --bs-fg-body: light-dark(var(--bs-pewter-950), var(--bs-pewter-050));
+    --bs-fg-1:    light-dark(var(--bs-pewter-800), var(--bs-pewter-200));
+    --bs-fg-2:    light-dark(var(--bs-pewter-700), var(--bs-pewter-300));
+    --bs-fg-3:    light-dark(var(--bs-pewter-600), var(--bs-pewter-400));
+    --bs-fg-4:    var(--bs-pewter-500);
+
+    /* ---------- Borders ---------- */
+    --bs-border-subtle:     light-dark(var(--bs-pewter-100), var(--bs-pewter-900));
+    --bs-border-muted:      light-dark(var(--bs-pewter-200), var(--bs-pewter-800));
+    --bs-border-body:       light-dark(var(--bs-pewter-300), var(--bs-pewter-700));
+    --bs-border-emphasized: light-dark(var(--bs-pewter-400), var(--bs-pewter-600));
+    --bs-border-color:      var(--bs-border-muted);
+
+    /* ---------- Primary: cyan-400 ---------- */
+    --bs-primary-base:        var(--bs-cyan-400);
+    --bs-primary-bg:          var(--bs-cyan-400);
+    --bs-primary-contrast:    var(--bs-pewter-975);   /* dark text on the bright button */
+    --bs-primary-bg-subtle:   light-dark(var(--bs-cyan-100), var(--bs-cyan-900));
+    --bs-primary-bg-muted:    light-dark(var(--bs-cyan-200), var(--bs-cyan-800));
+    --bs-primary-fg:          light-dark(var(--bs-cyan-700), var(--bs-cyan-400));
+    --bs-primary-fg-emphasis: light-dark(var(--bs-cyan-800), var(--bs-cyan-300));
+    --bs-primary-border:      light-dark(var(--bs-cyan-300), var(--bs-cyan-600));
+    --bs-primary-focus-ring:  light-dark(var(--bs-cyan-600), var(--bs-cyan-400));
+
+    --bs-body-font-family: "Geist", system-ui, sans-serif;
+    --bs-font-mono: "Geist Mono", ui-monospace, monospace;
+}
+
+/* Hover / pressed states for solid primary buttons */
+.btn-solid.theme-primary {
+    --bs-btn-hover-bg:            light-dark(var(--bs-cyan-500), var(--bs-cyan-300));
+    --bs-btn-hover-border-color:  light-dark(var(--bs-cyan-500), var(--bs-cyan-300));
+    --bs-btn-active-bg:           light-dark(var(--bs-cyan-600), var(--bs-cyan-200));
+    --bs-btn-active-border-color: light-dark(var(--bs-cyan-600), var(--bs-cyan-200));
+}
+
+
+.text-muted {
+    color: var(--bs-fg-3) !important;
+}
+
+.type-group { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+.type-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .375rem;
+    padding: .25rem .75rem;
+    font-size: .875rem;
+    font-weight: 500;
+    line-height: 1.5;
+    border: 1px solid var(--bs-border-emphasized);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--bs-fg-1);
+    cursor: pointer;
+    user-select: none;
+}
+.type-pill:hover { background: var(--bs-bg-2); color: var(--bs-fg-body); }
+
+.btn-check:checked + .type-pill {
+    background: var(--bs-primary-bg-subtle);
+    border-color: var(--bs-primary-border);
+    color: var(--bs-primary-fg-emphasis);
+}
+.btn-check:focus-visible + .type-pill {
+    outline: 2px solid var(--bs-primary-focus-ring);
+    outline-offset: 2px;
+}
+
+.filepond--panel-root { background-color: #f8f9fa; border: 2px dashed #ced4da; }
+.filepond--drop-label { color: #495057; }
+
+.text-danger {
+    color: #fa2424;
+}
